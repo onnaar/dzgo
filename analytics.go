@@ -21,6 +21,7 @@ func AnalyzeSales(sales []Sale) Report {
 	var revenue int64
 	var soldUnits, invalidSales, topProdUnits int
 	categories := make(map[string]int64)
+	productsSold := make(map[string]int)
 	topProd := ""
 	for _, sale := range sales {
 		if sale.Cancelled {
@@ -34,9 +35,12 @@ func AnalyzeSales(sales []Sale) Report {
 		revenue += revenueFromThis
 		soldUnits += sale.Quantity
 		categories[sale.Category] += revenueFromThis
-		if sale.Quantity > topProdUnits || (sale.Quantity == topProdUnits && sale.Product < topProd) {
-			topProdUnits = sale.Quantity
-			topProd = sale.Product
+		productsSold[sale.Product] += sale.Quantity
+	}
+	for name, amount := range productsSold {
+		if amount > topProdUnits || (amount == topProdUnits && name < topProd) {
+			topProdUnits = amount
+			topProd = name
 		}
 	}
 	return Report{revenue, soldUnits, categories, topProd, invalidSales}
